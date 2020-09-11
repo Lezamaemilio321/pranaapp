@@ -1,0 +1,117 @@
+<section class="items-section">
+
+    {{#if msg}}
+        <div class="success-class">
+            <p><b>{{ msg }}</b></p>
+        </div>
+
+    {{else}}
+        {{#if err}}
+            <div class="error-class">
+                <p><b>{{ err }}</b></p>
+            </div>
+        {{/if}}
+    {{/if}}
+
+    <div class="item-title" style="flex-direction: row;">
+        <h1 class="title">Acabados</h1>
+        <a href="/articulos/admin/agregar/acabado">
+            <img src="/images/website/add-icon.png" class="add" alt="agregar">
+        </a>
+    </div>
+
+    <br>
+    <br>
+
+    {{#if finishes}}
+        <table class="finish-table">
+            <tbody>
+                {{#each finishes}}
+
+                    <tr>
+                        <td>
+                            {{ name }}
+
+                            <img src="{{ image }}" alt="acabado" class="finish-image">
+
+                        </td>
+                        <td>
+                            <form action="/articulos/admin/acabados/{{ _id }}" method="POST" id="delete-form">
+                                <input type="hidden" name="_method" value="DELETE">
+
+                                <div class="finish-edit" value="{{ _id }}">
+                                    <a href="/articulos/admin/editar/acabado/{{ _id }}">
+                                        <img class="icon" src="/images/website/edit-icon.png" alt="editar">
+                                    </a>
+                                </div>
+                                <button class="delete-finish" type="submit">
+                                    <img src="/images/website/trash-icon.png" class="icon" alt="borrar">
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                {{/each}}
+            </tbody>
+        </table>
+    {{else}}
+
+        <p>No has creado ningun acabado</p>
+
+    {{/if}}
+
+</section>
+
+<script>
+
+    let buttons = document.querySelectorAll('.buy-button');
+
+    for (let btn of buttons) {
+
+        btn.addEventListener('click', function() {
+
+
+            const divId = this.value;
+            
+            let menuDiv = document.getElementById(divId);
+            menuDiv.classList.toggle('visible');
+
+
+            const gridItem = document.querySelector(`[data-item-id~="${this.value}"]`);
+
+
+            const darkArea = gridItem.querySelector('.dark-area');
+            const cancelButton = gridItem.querySelector('.cancel-button');
+
+            darkArea.classList.toggle('dark');
+
+            darkArea.addEventListener('click', function() {
+
+                menuDiv.classList.remove('visible');
+                darkArea.classList.remove('dark');
+
+            });
+
+            cancelButton.addEventListener('click', function() {
+
+                menuDiv.classList.remove('visible');
+                darkArea.classList.remove('dark');
+
+            });
+
+        });
+    }
+
+    function quantityChanged(event, stock) {
+        const input = event.target;
+
+        if (isNaN(input.value) || input.value <= 0){
+            input.value = 1;
+        }
+
+        if (input.value > stock) {
+            input.value = stock;
+        }
+    }
+
+</script>

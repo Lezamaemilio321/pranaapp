@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+
+        <script src="https://js.stripe.com/v3/"></script>
+
+        <script src="/js/checkout.js" defer></script>
+
+    <title>PRANA</title>
+</head>
+<body>
+    <header id="header">
+        <div class="header-container">
+            <ul class="first-ul">
+
+                <li>
+                    <a href="/articulos" onclick="toggle()">Artículos</a>
+                </li>
+                <li><a href="/nosotros" onclick="toggle()">Nosotros</a></li>
+
+            </ul>
+            <a href="/" class="logo">
+                <img src="/images/website/logo.png" class="img-logo" alt="PRANA">
+            </a>
+            <ul class="second-ul">
+                <li class="second-list"><a href="#" onclick="toggle()">Contáctanos</a></li>
+                
+                {{#if (checkAuth request) }}
+                    <li class="second-list login"><a href="/articulos/carrito" class="login" onclick="toggle()">Carrito ( {{ cartLength }} )</a></li>
+                {{else}}
+                    <li class="second-list"><a href="/login" class="login" onclick="toggle()">Login/Registrate</a></li>
+                {{/if}}
+
+            </ul>
+
+        <div class="toggle" onclick="toggle()"></div>
+        </div>
+    </header>
+
+    {{{ body }}}
+
+    <footer id="footer">
+        <div>
+            <br>
+            <h5>
+                <small>Copyright © 2020 | Prana.</small>
+            </h5>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+        function toggle(){
+            var header = document.getElementById("header")
+            header.classList.toggle('active')
+        }
+    </script>
+    <script src="/js/script.js" onload="checkForWidth()"></script>
+    
+    <script>
+        const alerted = localStorage.getItem('alerted') || '';
+        if (alerted != 'yes') {
+            alert("Los articulos en esta pagina se envian en Playa del Carmen, si vives afuera de Playa del Carmen contactanos para discutir el precio del envio.");
+            localStorage.setItem('alerted','yes');
+        }
+    </script>
+</body>
+</html>

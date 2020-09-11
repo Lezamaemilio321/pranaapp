@@ -1,0 +1,137 @@
+<section class="add-section">
+    <h3>Agregar Articulo</h3>
+    <br>
+    <hr>
+    <br>
+    <form action="/articulos/admin" method="POST" class="form-add" enctype="multipart/form-data">
+        <div class="row">
+            <div class="input-field">
+                <label for="name">Nombre:</label>
+                <input class="input-area" type="text" id="name" name="name" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+                <label for="status">Estado:</label>
+                <div style="width: 100%;">
+                    <select class="input-select" id="status" name="status">
+                        <option value="public" selected>Publico</option>
+                        <option value="private">Privado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+                <label for="price">Precio:</label>
+                <div style="width: 100%;">
+                    <input class="input-select" type="number" id="price" name="price" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+                <label for="measurments">Medidas:</label>
+                <input class="input-area" type="text" id="measurments" name="measurments">
+            </div>
+        </div>
+
+        
+        <div class="row">
+            <div class="input-field">
+                <label for="inStock">En Stock:</label>
+                <div style="width: 100%;">
+                    <input class="input-select stock-number" type="number" id="inStock" name="inStock">
+                </div>
+            </div>
+        </div>
+        <script>
+
+            document.querySelector('.stock-number').addEventListener('change', quantityChanged);
+
+
+            function quantityChanged(event) {
+                const input = event.target;
+
+                if (isNaN(input.value) || input.value <= 0){
+                    input.value = 1;
+                }
+            }
+        </script>
+
+        <div class="row">
+            <div class="input-field">
+                <label for="finishes">Acabados:</label>
+                <div class="checkbox-container">
+                        {{#each finishes}}
+                            <label for="{{ name }}" style="flex-direction: column;">
+                                <input type="checkbox" name="finishes[]" value="{{ name }}" id="{{ name }}"> {{ name }}
+                                <div>
+                                    <img src="{{ image }}" alt="acabado" style="height: 150px; background-repeat: repeat-y; size: cover">
+                                </div>
+                            </label>
+                        {{/each}}
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="input-field">
+                <label for="isExtra">+20% por acabados?</label>
+                <div style="width: 100%;">
+                    <select class="input-select" id="isExtra" name="isExtra">
+                        <option value="true" selected>Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="row">
+            <div class="input-field">
+                <label>Imagen:</label>
+                {{#if error}}
+                    <div class="error-class">{{ error }}</div>
+                {{/if}}
+                <input class="input-file" type="file" name="image" id="image"/>
+                <label for="image" class="input-area" id="file-label">Elige un archivo</label>
+            </div>
+        </div>
+
+        <br>
+        <br>
+
+        <div class="row">
+            <input type="submit" value="Guardar" class="add-save-btn">
+            <a href="/articulos">Cancelar</a>
+        </div>
+    </form>
+</section>
+
+<script>
+    let fileInput = document.querySelector('.input-file');
+
+    fileInput.addEventListener('change', (event) => {
+
+        let fileName = event.target.value.split( '\\' ).pop();
+
+        if (fileName == '' || fileName === null) {
+            document.querySelector('#file-label').textContent = 'Elige un archivo';
+        } else {
+            document.querySelector('#file-label').textContent = fileName;
+        }
+
+        console.log(fileName)
+    });
+
+</script>

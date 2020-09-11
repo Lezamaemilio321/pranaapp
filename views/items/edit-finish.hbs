@@ -1,0 +1,78 @@
+<section class="add-section">
+    <h3>Agregar Acabado/Color</h3>
+    <br>
+    <hr>
+    <br>
+    <form action="/articulos/admin/acabados/{{ finish._id }}" method="POST" class="form-add" enctype="multipart/form-data">
+        <input type="hidden" name="_method" value="PUT">
+        <div class="row">
+            <div class="input-field">
+                <label for="name">Nombre:</label>
+                {{#if nameError}}
+                    <div class="error-class">{{ nameError }}</div>
+                {{/if}}
+                <input class="input-area" value="{{ finish.name }}" type="text" id="name" name="name" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+                <label>Imagen:</label>
+                {{#if error}}
+                    <div class="error-class">{{ error }}</div>
+                {{/if}}
+                <input class="input-file" type="file" name="image" id="image"/>
+                <label for="image" class="input-area" id="file-label">
+                    <img src="{{ finish.image }}" class="image-file" alt="Imagen">
+                </label>
+            </div>
+        </div>
+
+        <input type="hidden" value="true" name="noNewImage" class="no-new-image">
+
+        <br>
+        <br>
+
+        <div class="row">
+            <input type="submit" value="Guardar" class="add-save-btn">
+            <a href="/articulos">Cancel</a>
+        </div>
+    </form>
+</section>
+
+<script>
+    let fileInput = document.querySelector('.input-file');
+
+    fileInput.addEventListener('change', (event) => {
+
+        let fileName = event.target.value.split( '\\' ).pop();
+
+        if (fileName == '' || fileName === null) {
+            let imageELement = document.querySelector('.image-file');
+            imageELement.src = '{{ finish.image }}';
+
+            document.querySelector('.no-new-image').value = true;
+
+        } else {
+
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
+
+                let imageELement = document.querySelector('.image-file');
+
+                reader.onload = function (e) {
+                    imageELement.src = e.target.result;
+                }
+
+                reader.readAsDataURL(event.target.files[0]);
+
+                document.querySelector('.no-new-image').value = false;
+            }
+
+        }
+
+
+    });
+
+
+</script>

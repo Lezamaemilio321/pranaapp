@@ -1,0 +1,155 @@
+<section class="items-section">
+
+    {{#if msg}}
+        <div class="success-class">
+            <p><b>{{ msg }}</b></p>
+        </div>
+
+    {{else}}
+        {{#if err}}
+            <div class="error-class">
+                <p><b>{{ err }}</b></p>
+            </div>
+        {{/if}}
+    {{/if}}
+
+    <div class="item-title" style="flex-direction: row;">
+        <h1 class="title"> Todos los Artículos</h1>
+        <a href="/articulos/admin/agregar">
+            <img src="/images/website/add-icon.png" class="add" alt="agregar">
+        </a>
+    </div>
+
+    <br>
+
+    <div class="grid-container">
+        {{#each items}}
+            <div class="grid-item" data-item-id='{{ _id }}'>
+
+                <div class="dark-area"></div>
+                
+                <img class="item-image" src="{{ image }}" alt="imagen">
+                <div class="menu-container">
+                    
+                    <div class="menu" id="{{ _id }}">
+
+                        <div class="menu-grid" style="grid-template-rows: 75% 25%; height: 100%;">
+                            <div class="menu-grid-finish">
+                                <h1>Acabados:</h1>
+                                <br>
+                                <div class="finish-container" style="max-height: 100%; height: 100%;">
+                                    {{#each finishes}}
+                                        {{#if ../isExtra}}
+                                            <label class="finish-label">
+                                                <div class="finish-img-container">
+                                                    <img src="/images/website/extra-icon.png" class="extra" alt="+20%">
+                                                    <img class="finish-img" src="{{ image }}" alt="{{ name }}">
+                                                </div>
+                                            </label>
+                                        {{else}}
+                                            <label class="finish-label">
+                                                <div class="finish-img-container">
+                                                    <img class="finish-img" src="{{ image }}" alt="{{ name }}">
+                                                </div>
+                                            </label>
+                                        {{/if}}
+                                    {{/each}}
+                                </div>
+                                <div class="divider"></div>                         
+                            </div>
+
+
+                            <div class="menu-grid-buy">
+                                <div style="display: flex; align-items: flex-end;">
+                                    <button class="ok-button">
+                                        <h2>Ok</h2>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="divider" style="margin: 5px 0 20px;"></div>
+                <div class="item-grid" style="grid-template-rows: 70% 30%;height: 500px;">
+                    <div>
+                        <h3 class="item-property"><b>Nombre: </b>{{ name }}</h3>
+                        <h4 class="item-property"><b>Precio: </b>${{ price }}</h4>
+                        <h4 class="item-property"><b>Medidas: </b>{{ measurments }}</h4>
+                        <h4 class="item-property"><b>En Stock: {{ inStock }}</b></h4>
+                        <h4 class="item-property"><b>Estado: 
+                            {{#if (checkEqual status 'public')}}
+                                Publico
+                            {{else}}
+                                {{#if (checkEqual status 'private')}}
+                                    Privado
+                                {{/if}}
+                            {{/if}}
+                        </b></h4>
+
+
+                        <div class="finish-button" style="margin-top: 15px;" value="{{ _id }}">
+                            <h3 style="margin-bottom: 10px; align-self: center;"><b>Acabados</b></h3>
+                        </div>
+                    </div>
+
+                    <form class="btn-section" action="/articulos/admin/{{ _id }}" method="POST">
+                        <input type="hidden" name="_method" value="DELETE">
+
+                        <a href="/articulos/admin/editar/{{ _id }}" class="item-edit">
+                            <img src="/images/website/edit-icon.png" class="icon" alt="cart">
+                        </a>
+
+                        <button name="buyNow" value="{{ _id }}" class="buy-button" type="submit">
+                            <img src="/images/website/trash-icon.png" class="icon" alt="cart">
+                        </button>
+                    </form>
+                </div>
+                
+            </div>
+        {{/each}}
+    </div>
+</section>
+
+<script>
+
+    let buttons = document.querySelectorAll('.finish-button');
+
+    for (let btn of buttons) {
+
+        btn.addEventListener('click', function() {
+
+            const divId = this.getAttribute('value');
+            
+            let menuDiv = document.getElementById(divId);
+
+            menuDiv.classList.toggle('visible');
+
+
+            const gridItem = document.querySelector(`[data-item-id~="${divId}"]`);
+
+
+            const darkArea = gridItem.querySelector('.dark-area');
+            const okButton = gridItem.querySelector('.ok-button');
+
+            darkArea.classList.toggle('dark');
+
+            darkArea.addEventListener('click', function() {
+
+                menuDiv.classList.remove('visible');
+                darkArea.classList.remove('dark');
+
+            });
+
+            okButton.addEventListener('click', function() {
+
+                menuDiv.classList.remove('visible');
+                darkArea.classList.remove('dark');
+
+            });
+
+        });
+    }
+</script>

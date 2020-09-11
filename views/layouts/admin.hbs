@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <title>PRANA</title>
+</head>
+<body>
+    <header id="header">
+        <div class="header-container">
+            <ul class="first-ul">
+
+                <li>
+                    <a href="/articulos/admin" onclick="toggle()">Todos los Artículos</a>
+                </li>
+                <li><a href="/articulos/admin/acabados" onclick="toggle()">Acabados</a></li>
+
+            </ul>
+            <a href="/articulos/admin" class="logo">
+                <img src="/images/website/logo.png" class="img-logo" alt="PRANA">
+            </a>
+            <ul class="second-ul">
+
+                <li class="second-list"><a href="/auth/logout" class="login" onclick="toggle()">Cerrar Sesión</a></li>
+
+            </ul>
+
+        <div class="toggle" onclick="toggle()"></div>
+        </div>
+    </header>
+
+    {{{ body }}}
+
+    <footer id="footer">
+        <div>
+            <br>
+            <h5>
+                <small>Copyright © 2020 | Prana.</small>
+            </h5>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+        function toggle(){
+            var header = document.getElementById("header")
+            header.classList.toggle('active')
+        }
+    </script>
+    <script src="/js/script.js" onload="checkForWidth()"></script>
+</body>
+</html>

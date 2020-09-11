@@ -1,0 +1,16 @@
+<section class="success-section">
+    <h1><b>Gracias por tu compra!</b></h1>
+    <br>
+    <p>Te recomendamos ponerte en contacto con nosotros para seguir con tu compra.</p>
+    {{#if items}}
+        <br>
+        <h1>Compraste:</h1>
+        <br>
+        <ul>
+            {{#each items}}
+                <h2><li>( {{ qty }} ) <b>{{ name }}</b></li></h2>
+            {{/each}}            
+        </ul>
+
+    {{/if}}
+</section>

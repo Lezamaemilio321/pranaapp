@@ -1,0 +1,192 @@
+<section class="items-section">
+
+    {{#if msg}}
+        <div class="success-class">
+            <p><b>{{ msg }}</b></p>
+        </div>
+
+    {{else}}
+        {{#if err}}
+            <div class="error-class">
+                <p><b>{{ err }}</b></p>
+            </div>
+        {{/if}}
+    {{/if}}
+
+    <div class="item-title">
+        <h1 class="title">Artículos</h1>
+        <div class="warning">
+            <img src="/images/website/warning-icon.png" alt="alerta" style="width: 15px; height: 15px; opacity: 0.7; margin-right: 20px">
+            <small>UVYvy IG G u G ut U UTV  i G G  uGViyvGYU I OY YV </p>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="grid-container">
+        {{#each items}}
+            <div class="grid-item" data-item-id='{{ _id }}'>
+
+                <div class="dark-area"></div>
+                
+                <img class="item-image" src="{{ image }}" alt="imagen">
+                <div class="menu-container">
+                    
+                    <div class="menu" id="{{ _id }}">
+
+                        <div class="menu-grid">
+                            <div class="menu-grid-finish">
+                                <h1>Elige un acabado:</h1>
+                                <br>
+                                <div class="finish-container">
+                                    <label class="finish-label">
+                                        <input type="radio" value="original" name="finish{{ @index }}" id="finish-id" checked>
+                                        <div class="finish-img-container">
+                                            <img class="finish-img" src="/images/website/no-finish-icon.png" alt="original">
+                                        </div>
+                                    </label>
+
+                                    {{#each finishes}}
+                                        {{#if ../isExtra}}
+                                            <label class="finish-label">
+                                                <input type="radio" value="{{ name }}" name="finish{{ @../index }}" id="finish-id">
+                                                <div class="finish-img-container">
+                                                    <img src="/images/website/extra-icon.png" class="extra" alt="+20%">
+                                                    <img class="finish-img" src="{{ image }}" alt="{{ name }}">
+                                                </div>
+                                            </label>
+                                        {{else}}
+                                            <label class="finish-label">
+                                                <input type="radio" value="{{ name }}" name="finish{{ @../index }}" id="finish-id">
+                                                <div class="finish-img-container">
+                                                    <img class="finish-img" src="{{ image }}" alt="{{ name }}">
+                                                </div>
+                                            </label>
+                                        {{/if}}
+                                    {{/each}}
+
+                                </div>
+                                
+                                <br>
+                                <div class="divider"></div>                                
+                            </div>
+                            
+
+
+                            <div class="menu-grid-buy">
+                                <br>
+                                <h1>Elige una cantidad:</h1>
+                                <br>
+
+                                <input onchange="quantityChanged(event, {{ inStock }})" style="width: 40%;" class="input-select" value="1" type="number" name="itemQty" id="item-qty">
+
+                                <div class="save-buttons">
+                                    <button class="buy-confirm" value="{{ _id }}">
+                                        <h2 style="font-weight: 500;">Comprar Ahora</h2>
+                                    </button>
+                                    <button class="cancel-button">
+                                        <h2>Cancelar</h2>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="divider" style="margin: 5px 0 20px;"></div>
+                <div class="item-grid">
+                    <div>
+                        <h3 class="item-property"><b>Nombre: </b>{{ name }}</h3>
+                        <h4 class="item-property"><b>Precio: </b>${{ price }}</h4>
+                        <h4 class="item-property"><b>Medidas: </b>{{ measurments }}</h4>
+                        <h4 class="item-property"><b>En Stock: {{ inStock }}</b></h4>
+                    </div>
+
+                    <form class="btn-section" action="/articulos/carrito/{{ _id }}" method="POST">
+
+                        {{#if (checkAuth ../request)}}
+                            {{#if exists}}
+                                <button type="submit" class="cart-button existing-class" disabled>
+                                    <img src="/images/website/cart-icon.png" class="icon" alt="cart">
+                                </button>
+                            {{else}}     
+                                <button type="submit" class="cart-button">
+                                    <img src="/images/website/cart-icon.png" class="icon" alt="cart">
+                                </button>
+                            {{/if}}
+
+                            <button name="buyNow" value="{{ _id }}" class="buy-button" type="button">
+                                <h1 class="dollar">Comprar Ahora</h1>
+                            </button>
+                        {{else}}
+                            <button type="submit" class="locked-button">
+                                <img src="/images/website/locked-icon.png" class="icon" alt="cart">
+                            </button>
+                            <button name="buyNow" value="{{ _id }}" class="buy-button" type="button">
+                                <h1 class="dollar">Comprar Ahora</h1>
+                            </button>
+                        {{/if}}
+                    </form>
+                </div>
+                
+            </div>
+        {{/each}}
+    </div>
+
+</section>
+
+<script>
+
+    let buttons = document.querySelectorAll('.buy-button');
+
+    for (let btn of buttons) {
+
+        btn.addEventListener('click', function() {
+
+
+            const divId = this.value;
+            
+            let menuDiv = document.getElementById(divId);
+            menuDiv.classList.toggle('visible');
+
+
+            const gridItem = document.querySelector(`[data-item-id~="${this.value}"]`);
+
+
+            const darkArea = gridItem.querySelector('.dark-area');
+            const cancelButton = gridItem.querySelector('.cancel-button');
+
+            darkArea.classList.toggle('dark');
+
+            darkArea.addEventListener('click', function() {
+
+                menuDiv.classList.remove('visible');
+                darkArea.classList.remove('dark');
+
+            });
+
+            cancelButton.addEventListener('click', function() {
+
+                menuDiv.classList.remove('visible');
+                darkArea.classList.remove('dark');
+
+            });
+
+        });
+    }
+
+    function quantityChanged(event, stock) {
+        const input = event.target;
+
+        if (isNaN(input.value) || input.value <= 0){
+            input.value = 1;
+        }
+
+        if (input.value > stock) {
+            input.value = stock;
+        }
+    }
+
+</script>

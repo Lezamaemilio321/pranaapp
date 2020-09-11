@@ -1,0 +1,55 @@
+<section class="add-section">
+    <h3>Agregar Acabado/Color</h3>
+    <br>
+    <hr>
+    <br>
+    <form action="/articulos/admin/acabados" method="POST" class="form-add" enctype="multipart/form-data">
+        <div class="row">
+            <div class="input-field">
+                <label for="name">Nombre:</label>
+                {{#if nameError}}
+                    <div class="error-class">{{ nameError }}</div>
+                {{/if}}
+                <input class="input-area" type="text" id="name" name="name" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+                <label>Imagen:</label>
+                {{#if error}}
+                    <div class="error-class">{{ error }}</div>
+                {{/if}}
+                <input class="input-file" type="file" name="image" id="image"/>
+                <label for="image" class="input-area" id="file-label">Elige un archivo</label>
+            </div>
+        </div>
+
+        <br>
+        <br>
+
+        <div class="row">
+            <input type="submit" value="Guardar" class="add-save-btn">
+            <a href="/articulos">Cancel</a>
+        </div>
+    </form>
+</section>
+
+<script>
+    let fileInput = document.querySelector('.input-file');
+
+    fileInput.addEventListener('change', (event) => {
+
+        let fileName = event.target.value.split( '\\' ).pop();
+
+        if (fileName == '' || fileName === null) {
+            document.querySelector('#file-label').textContent = 'Choose a file';
+        } else {
+            document.querySelector('#file-label').textContent = fileName;
+        }
+
+        console.log(fileName)
+    });
+
+
+</script>

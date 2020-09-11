@@ -1,0 +1,183 @@
+<section class="add-section">
+    <h3>Editar Articulo</h3>
+    <br>
+    <hr>
+    <br>
+    <form action="/articulos/admin/{{ item._id }}" method="POST" class="form-add" enctype="multipart/form-data">
+        <input type="hidden" name="_method" value="PUT">
+        <div class="row">
+            <div class="input-field">
+                <label for="name">Nombre:</label>
+                <input class="input-area" type="text" id="name" value="{{ item.name }}" name="name" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+                <label for="status">Estado:</label>
+                <div style="width: 100%;">
+                    <select class="input-select" id="status" name="status">
+                        {{#if (checkEqual item.status 'public')}}
+                            <option value="public" selected>Publico</option>
+                            <option value="private">Privado</option>
+                        {{else}}
+                            {{#if (checkEqual item.status 'private')}}
+                                <option value="public">Publico</option>
+                                <option value="private" selected>Privado</option>
+                            {{/if}}
+                        {{/if}}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+                <label for="price">Precio:</label>
+                <div style="width: 100%;">
+                    <input class="input-select" type="number" id="price" value="{{ item.price }}" name="price" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+                <label for="measurments">Medidas:</label>
+                <input class="input-area" type="text" id="measurments" value="{{ item.measurments }}" name="measurments">
+            </div>
+        </div>
+
+        
+        <div class="row">
+            <div class="input-field">
+                <label for="inStock">En Stock:</label>
+                <div style="width: 100%;">
+                    <input class="input-select stock-number" type="number" id="inStock" value="{{ item.inStock }}" name="inStock">
+                </div>
+            </div>
+        </div>
+        <script>
+
+            document.querySelector('.stock-number').addEventListener('change', quantityChanged);
+
+
+            function quantityChanged(event) {
+                const input = event.target;
+
+                if (isNaN(input.value) || input.value <= 0){
+                    input.value = 1;
+                }
+            }
+        </script>
+
+        <div class="row">
+            <div class="input-field">
+                <label for="finishes">Acabados:</label>
+                <div class="checkbox-container">
+                        {{#each finishes}}
+                            {{#if (isIn name ../finishNames)}}
+                                <label for="{{ name }}" style="flex-direction: column;">
+                                    <input type="checkbox" name="finishes" value="{{ name }}" id="{{ name }}" checked> {{ name }}
+                                    <div>
+                                        <img src="{{ image }}" alt="acabado" style="height: 150px; background-repeat: repeat-y; size: cover">
+                                    </div>
+                                </label>
+                            {{else}}
+                                <label for="{{ name }}" style="flex-direction: column;">
+                                    <input type="checkbox" name="finishes" value="{{ name }}" id="{{ name }}"> {{ name }}
+                                    <div>
+                                        <img src="{{ image }}" alt="acabado" style="height: 150px; background-repeat: repeat-y; size: cover">
+                                    </div>
+                                </label>
+                            {{/if}}
+                        {{/each}}
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="input-field">
+                <label for="isExtra">+20% por acabados?</label>
+                <div style="width: 100%;">
+                    <select class="input-select" id="isExtra" name="isExtra">
+                        {{#if (checkEqual item.isExtra true)}}
+                            <option value="true" selected>Sí</option>
+                            <option value="false">No</option>
+                        {{else}}
+                            {{#if (checkEqual item.isExtra false)}}
+                                <option value="true">Sí</option>
+                                <option value="false" selected>No</option>
+                            {{/if}}
+                        {{/if}}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="row">
+            <div class="input-field">
+                <label>Imagen:</label>
+                {{#if error}}
+                    <div class="error-class">{{ error }}</div>
+                {{/if}}
+                <input class="input-file" type="file" name="image" id="image"/>
+                <label for="image" class="input-area" id="file-label">
+                    <img src="{{ item.image }}" class="image-file" alt="Imagen">
+                </label>
+            </div>
+        </div>
+
+        <input type="hidden" value="true" name="noNewImage" class="no-new-image">
+
+        <br>
+        <br>
+
+        <div class="row">
+            <input type="submit" value="Guardar" class="add-save-btn">
+            <a href="/articulos">Cancelar</a>
+        </div>
+    </form>
+</section>
+
+<script>
+    let fileInput = document.querySelector('.input-file');
+
+    fileInput.addEventListener('change', (event) => {
+
+        let fileName = event.target.value.split( '\\' ).pop();
+
+        if (fileName == '' || fileName === null) {
+            let imageELement = document.querySelector('.image-file');
+            imageELement.src = '{{ item.image }}';
+
+            document.querySelector('.no-new-image').value = true;
+
+        } else {
+
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
+
+                let imageELement = document.querySelector('.image-file');
+
+                reader.onload = function (e) {
+                    imageELement.src = e.target.result;
+                }
+
+                reader.readAsDataURL(event.target.files[0]);
+
+                document.querySelector('.no-new-image').value = false;
+            }
+
+        }
+
+
+    });
+
+</script>
