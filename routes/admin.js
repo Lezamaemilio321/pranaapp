@@ -32,10 +32,10 @@ router.use(function (req, res, next) {
 
         } catch (error) {
 
-            console.log(error)
+            console.log(error);
             return res.redirect('/');
 
-        }    
+        }
 
     })();
 
@@ -64,7 +64,7 @@ const upload = multer({
     fileFilter: function(req, file, callback) {
 
         //Checking to see if the file is an image
-        
+
         //Allowed extensions
         const fileTypes = /jpeg|jpg|png|gif/;
 
@@ -88,7 +88,7 @@ const uploadFinish = multer({
     storage: storageFinish,
     fileFilter: function(req, file, callback) {
         //Checking to see if the file is an image
-        
+
         //Allowed extensions
         const fileTypes = /jpeg|jpg|png|gif/;
 
@@ -127,7 +127,7 @@ router.use(methodOverride(function (req, res) {
             let method = req.body._method;
             delete req.body._method;
             return method;
-        }    
+        }
 
 
     } else if (((req.url.split('/').reverse()[1] == '' || req.url.split('/').reverse()[1] == 'acabados' || req.url.split('/').reverse()[0] == 'acabado') && req.method == 'POST') && isEmpty(req.body)) {
@@ -154,61 +154,64 @@ router.use(function (req, res, next) {
 
             try {
 
+
                 uploadFinish.single('image')(req, res, async (err) => {
-    
+
                     if (err) {
-    
+
                         try {
-    
-                            if (req.url.split('/').reverse()[0] == 'acabados' && req.url.split('/').reverse()[1] == 'agregar') {
-    
+
+
+
+                            if (req.url.split('/').reverse()[0] == 'acabados') {
+
                                 req.flash('error', err);
                                 return res.redirect('/articulos/admin/agregar/acabado');
-    
+
                             } else {
 
                                 const finish = await Finish.findById(mongoose.Types.ObjectId(req.session.finishId)).lean();
-                                return res.render('items/edit-item', { layout: 'admin', finish: finish, error: err });        
-    
-                            }    
-                            
+                                return res.render('items/edit-item', { layout: 'admin', finish: finish, error: err });
+
+                            }
+
                         } catch (error) {
-    
+
                             console.log(error);
                             return res.render('error/500', { layout: 'admin' });
-                            
+
                         }
-    
+
                     }
-    
+
                     req.isProcessed = true;
                     next();
-            
+
                 });
-                
+
             } catch (error) {
                 console.error(error);
                 return res.render('error/500', { layout: 'admin' });
             }
-    
+
 
         } else {
 
             try {
 
                 upload.single('image')(req, res, async (err) => {
-    
-    
+
+
                     if (err) {
-    
+
                         try {
-    
+
                             if (req.url.split('/')[0] == '' && req.url.split('/')[1] == '') {
-    
+
                                 req.flash('itemErr', err);
-    
+
                                 return res.redirect('/articulos/admin/agregar');
-    
+
                             } else {
 
 
@@ -219,37 +222,37 @@ router.use(function (req, res, next) {
                                     const finishes = await Finish.find({}).lean();
 
                                     req.session.itemId = null;
-                                    
-                                    
-                                    return res.render('items/edit-item', { layout: 'admin', finishes: finishes, item: item, finishNames: finishNames, error: err });            
+
+
+                                    return res.render('items/edit-item', { layout: 'admin', finishes: finishes, item: item, finishNames: finishNames, error: err });
 
                                 } else {
                                     return res.render('error/404', { layout: 'admin' });
                                 }
-                            
-    
-                            }    
-                            
+
+
+                            }
+
                         } catch (error) {
-    
+
                             console.log(error);
                             return res.render('error/500', { layout: 'admin' });
-                            
+
                         }
-    
+
                     }
-    
+
                     req.isProcessed = true;
                     next();
-            
+
                 });
-                
+
             } catch (error) {
                 console.error(error);
                 return res.render('error/500', { layout: 'admin' });
             }
-    
-            
+
+
         }
 
     } else {
@@ -291,9 +294,9 @@ router.get('/', async (req, res) => {
         const items = await Item.find({}).lean();
 
         res.render('items/admin-items', { layout: 'admin', items: items, msg: req.flash('msg'), err: req.flash('err') });
-        
+
     } catch (error) {
-        
+
     }
 
 });
@@ -301,7 +304,6 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
 
-    
     try {
 
         requestBody = req.body;
@@ -316,7 +318,7 @@ router.post('/', async (req, res) => {
 
             if (requestBody.finishes !== undefined) {
                 newFinishes = [];
-        
+
                 const allFinishes = await Finish.find({}).lean();
 
                 for (let fin of requestBody.finishes) {
@@ -345,7 +347,7 @@ router.post('/', async (req, res) => {
                 await Item.create(newItem);
                 res.redirect('/articulos/admin');
 
-                
+
             } catch (error) {
                 console.error(error);
                 res.render('error/500', { layout: 'admin' });
@@ -360,10 +362,24 @@ router.post('/', async (req, res) => {
                 fs.writeFileSync(`./public/images/uploads/${req.file.filename}`, image);
 
                 requestBody.image = `/images/uploads/${req.file.filename}`
-        
+
             } catch (err) {
 
                 console.error(err);
+
+                try {
+
+                   const imgPath = path.join(__dirname, `../public/images/uploads/${req.file.filename}`);
+
+                   fs.unlinkSync(imgPath, (err) => {
+                      if (err) {
+                           console.error(err);
+                       }
+                   });
+
+                } catch (error) {
+                    console.error(error);
+                }
 
                 requestBody.image = '/images/default/default.png'
             }
@@ -372,7 +388,7 @@ router.post('/', async (req, res) => {
 
             if (requestBody.finishes !== undefined) {
                 newFinishes = [];
-        
+
                 const allFinishes = await Finish.find({}).lean();
 
                 for (let fin of requestBody.finishes) {
@@ -400,9 +416,24 @@ router.post('/', async (req, res) => {
                 await Item.create(newItem);
                 res.redirect('/articulos/admin');
 
-                
+
             } catch (error) {
                 console.error(error);
+
+                try {
+
+                   const imgPath = path.join(__dirname, `../public/images/uploads/${req.file.filename}`);
+
+                   fs.unlinkSync(imgPath, (err) => {
+                      if (err) {
+                           console.error(err);
+                       }
+                   });
+
+                } catch (err) {
+                    console.error(err);
+                }
+
                 res.render('error/500', { layout: 'admin' });
             }
         }
@@ -419,7 +450,7 @@ router.post('/', async (req, res) => {
 
 
 router.put('/:id', async (req, res) => {
-    
+
     try {
 
         if (typeof(req.body.finishes) == 'string') {
@@ -431,7 +462,7 @@ router.put('/:id', async (req, res) => {
         let existingItem = await Item.findById(mongoose.Types.ObjectId(req.params.id)).lean();
 
 
-        if (req.body.noNewImage === 'true') {
+        if (req.body.noNewImage === 'true' && req.file == undefined) {
 
             delete req.body.noNewImage;
 
@@ -439,7 +470,7 @@ router.put('/:id', async (req, res) => {
 
             if (req.body.finishes !== undefined) {
                 newFinishes = [];
-        
+
                 const allFinishes = await Finish.find({}).lean();
 
                 for (let fin of req.body.finishes) {
@@ -466,12 +497,12 @@ router.put('/:id', async (req, res) => {
 
                 existingItem = await Item.findOneAndUpdate({ _id: existingItem._id }, newItem, { new: true, runValidators: true });
                 res.redirect('/articulos/admin');
-                
+
             } catch (error) {
 
                 console.error(error);
                 res.render('error/500', { layout: 'admin' });
-                
+
             }
 
 
@@ -484,22 +515,37 @@ router.put('/:id', async (req, res) => {
 
                     const image = await sharp(`./public/images/uploads/${req.file.filename}`).resize(500, 500).png().toBuffer();
                     fs.writeFileSync(`./public/images/uploads/${req.file.filename}`, image);
-    
+
                     req.body.image = `/images/uploads/${req.file.filename}`
-    
-                    const imgPath = path.join(__dirname, `../public${existingItem.image}`)
-    
+
+                    const imgPath = path.join(__dirname, `../public${existingItem.image}`);
+
                     fs.unlinkSync(imgPath, (err) => {
                         if (err) {
                             console.error(err);
                         }
                     });
-            
+
                 } catch (err) {
-    
+
                     console.error(err);
+
+                    try {
+
+                       const imgPath = path.join(__dirname, `../public/images/uploads/${req.file.filename}`);
+
+                       fs.unlinkSync(imgPath, (error) => {
+                           if (error) {
+                               console.error(error);
+                           }
+                       });
+
+                    } catch (error) {
+                        console.error(error);
+                    }
+
                     req.body.image = '/images/default/default.png'
-                }    
+                }
 
             }
 
@@ -509,7 +555,7 @@ router.put('/:id', async (req, res) => {
 
             if (req.body.finishes !== undefined) {
                 newFinishes = [];
-        
+
                 const allFinishes = await Finish.find({}).lean();
 
                 for (let fin of req.body.finishes) {
@@ -532,17 +578,33 @@ router.put('/:id', async (req, res) => {
                 newItem.finishes = [];
             }
 
-            
+
             try {
 
                 existingItem = await Item.findOneAndUpdate({ _id: existingItem._id }, newItem, { new: true, runValidators: true });
                 res.redirect('/articulos/admin');
-                
+
             } catch (error) {
 
                 console.error(error);
+
+                try {
+
+                   const imgPath = path.join(__dirname, `../public/images/uploads/${req.file.filename}`);
+
+                   fs.unlinkSync(imgPath, (err) => {
+                      if (err) {
+                           console.error(err);
+                       }
+                   });
+
+                } catch (err) {
+                    console.error(err);
+                }
+
+
                 res.render('error/500', { layout: 'admin' });
-                
+
             }
 
         }
@@ -569,30 +631,30 @@ router.delete('/:id', async (req, res) => {
 
             try {
 
-                const imgPath = path.join(__dirname, `../public${item.image}`)
-    
+                const imgPath = path.join(__dirname, `../public${item.image}`);
+
                 fs.unlinkSync(imgPath, (err) => {
                     if (err) {
                         console.error(err);
                     }
                 });
-                
+
             } catch (error) {
 
                 console.error(error);
-                
+
             }
 
         }
 
         await Item.deleteOne({ _id: item._id });
         res.redirect('/articulos/admin');
-        
+
     } catch (error) {
 
         console.error(error);
         res.render('error/500', { layout: 'admin' });
-        
+
     }
 
 });
@@ -600,13 +662,12 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/acabados/:id', async (req, res) => {
 
-
     try {
 
         let existingFinish = await Finish.findById(mongoose.Types.ObjectId(req.params.id)).lean();
 
 
-        if (req.body.noNewImage === 'true') {
+        if (req.body.noNewImage === 'true' && req.file == undefined) {
 
             delete req.body.noNewImage;
 
@@ -614,28 +675,40 @@ router.put('/acabados/:id', async (req, res) => {
 
             try {
 
-                Finish.exists({ name: newFinish.name }, async (err, result) => {
-                    if (err) {
-                        return res.render('error/500', { layout: 'admin' });
-                    }
-        
-                    if (result == true) {
-                        req.flash('nameErrorEdit', 'Ese nombre de acabado/color ya se ha usado');
-                        res.redirect(`/articulos/admin/editar/acabado/${req.params.id}`);
-                    } else {
-        
-                        existingFinish = await Finish.findOneAndUpdate({ _id: existingFinish._id }, newFinish, { new: true, runValidators: true });
 
-                        req.flash('finMsg', 'Acabado Editado!');
-                        res.redirect('/articulos/admin/acabados');
-        
+                Finish.exists({ name: newFinish.name }, async (err, result) => {
+
+                    try {
+
+                        if (err) {
+                            return res.render('error/500', { layout: 'admin' });
+                        }
+
+
+                        if (result == true && newFinish.name !== existingFinish.name) {
+
+                            req.flash('nameErrorEdit', 'Ese nombre de acabado/color ya se ha usado');
+                            return res.redirect(`/articulos/admin/editar/acabado/${req.params.id}`);
+
+                        } else {
+
+                            existingFinish = await Finish.findOneAndUpdate({ _id: existingFinish._id }, newFinish, { new: true, runValidators: true });
+
+                            req.flash('finMsg', 'Acabado Editado!');
+                            res.redirect('/articulos/admin/acabados');
+
+                        }
+
+                    } catch (error) {
+                       console.error(error);
+                       res.render('error/500', { layout: 'admin' });
                     }
                 });
-                
+
             } catch (error) {
 
                 console.error(error);
-                res.render('error/500', { layout: 'admin' });                
+                res.render('error/500', { layout: 'admin' });
             }
 
 
@@ -643,22 +716,37 @@ router.put('/acabados/:id', async (req, res) => {
 
             try {
 
-                const image = await sharp(`./public/images/uploads/${req.file.filename}`).resize(500, 500).png().toBuffer();
-                fs.writeFileSync(`./public/images/uploads/${req.file.filename}`, image);
+                const image = await sharp(`./public/images/finishes/${req.file.filename}`).resize(300, 300).png().toBuffer();
+                fs.writeFileSync(`./public/images/finishes/${req.file.filename}`, image);
 
-                req.body.image = `/images/uploads/${req.file.filename}`
+                req.body.image = `/images/finishes/${req.file.filename}`;
 
-                const imgPath = path.join(__dirname, `../public${existingFinish.image}`)
+                const imgPath = path.join(__dirname, `../public${existingFinish.image}`);
 
                 fs.unlinkSync(imgPath, (err) => {
                     if (err) {
                         console.error(err);
                     }
                 });
-        
+
             } catch (err) {
 
                 console.error(err);
+
+                try {
+
+                   const imgPath = path.join(__dirname, `./public/images/finishes/${req.file.filename}`);
+
+                   fs.unlinkSync(imgPath, (err) => {
+                      if (err) {
+                           console.error(err);
+                       }
+                   });
+
+                } catch (err) {
+                    console.error(err);
+                }
+
                 req.body.image = existingFinish.image;
             }
 
@@ -670,27 +758,65 @@ router.put('/acabados/:id', async (req, res) => {
 
 
                 Finish.exists({ name: newFinish.name }, async (err, result) => {
-                    if (err) {
-                        return res.render('error/500', { layout: 'admin' });
-                    }
-        
-                    if (result == true) {
-                        req.flash('nameErrorEdit', 'Ese nombre de acabado/color ya se ha usado');
-                        res.redirect(`/articulos/admin/editar/acabado/${req.params.id}`);
-                    } else {
-        
-                        existingFinish = await Finish.findOneAndUpdate({ _id: existingFinish._id }, newFinish, { new: true, runValidators: true });
-                
-                        req.flash('finMsg', 'Acabado Editado!');
-                        res.redirect('/articulos/admin/acabados');
-        
+                    try {
+
+                        if (err) {
+                            return res.render('error/500', { layout: 'admin' });
+                        }
+
+                        if (result == true && newFinish.name ==! existingFinish.name) {
+                            req.flash('nameErrorEdit', 'Ese nombre de acabado/color ya se ha usado');
+                            res.redirect(`/articulos/admin/editar/acabado/${req.params.id}`);
+                        } else {
+
+                            existingFinish = await Finish.findOneAndUpdate({ _id: existingFinish._id }, newFinish, { new: true, runValidators: true });
+
+                            req.flash('finMsg', 'Acabado Editado!');
+                            res.redirect('/articulos/admin/acabados');
+
+                        }
+                    } catch (error) {
+                        console.error(error);
+
+                        try {
+
+                            const imgPath = path.join(__dirname, `./public/images/finishes/${req.file.filename}`);
+
+                            fs.unlinkSync(imgPath, (err) => {
+                               if (err) {
+                                    console.error(err);
+                                }
+                            });
+
+                        } catch (err) {
+                            console.error(err);
+                        }
+
+
+                        res.render('error/500', { layout: 'admin' });
                     }
                 });
-                
+
             } catch (error) {
 
                 console.error(error);
-                res.render('error/500', { layout: 'admin' });                
+
+                try {
+
+                   const imgPath = path.join(__dirname, `./public/images/finishes/${req.file.filename}`);
+
+                   fs.unlinkSync(imgPath, (err) => {
+                      if (err) {
+                           console.error(err);
+                       }
+                   });
+
+                } catch (err) {
+                    console.error(err);
+                }
+
+
+                res.render('error/500', { layout: 'admin' });
             }
 
         } else {
@@ -712,8 +838,6 @@ router.get('/agregar', async (req, res) => {
 
     const finishes = await Finish.find({}).lean();
 
-    console.log(finishes)
-    
     res.render('items/add', { layout: 'admin', finishes, error: req.flash('itemErr') });
 
 });
@@ -731,18 +855,18 @@ router.get('/editar/:id', async (req, res) => {
         const item = await Item.findById(mongoose.Types.ObjectId(req.params.id)).lean();
 
         const finishNames = item.finishes.map(el => el.name);
-    
+
         const finishes = await Finish.find({}).lean();
-    
+
         req.session.itemId = item._id;
 
-        
+
         res.render('items/edit-item', { layout: 'admin', finishes: finishes, item: item, finishNames: finishNames });
-        
+
     } catch (error) {
 
         console.error(error);
-        res.render('error/404', { layout: 'admin' });        
+        res.render('error/404', { layout: 'admin' });
     }
 
 });
@@ -763,11 +887,11 @@ router.get('/editar/acabado/:id', async (req, res) => {
 
 
         res.render('items/edit-finish', { layout: 'admin', finish: finish, error: req.flash('error'), nameError: req.flash('nameErrorEdit') });
-        
+
     } catch (error) {
 
         console.error(error);
-        res.render('error/404', { layout: 'admin' });        
+        res.render('error/404', { layout: 'admin' });
     }
 
 });
@@ -775,7 +899,7 @@ router.get('/editar/acabado/:id', async (req, res) => {
 
 
 router.get('/agregar/acabado', (req, res) => {
-    
+
     res.render('items/add-finish', { layout: 'admin', error: req.flash('error'), nameError: req.flash('nameError') });
 
 });
@@ -792,16 +916,16 @@ router.delete('/acabados/:id', async (req, res) => {
 
         try {
 
-            const imgPath = path.join(__dirname, `../public${finish.image}`)
+            const imgPath = path.join(__dirname, `../public${finish.image}`);
 
             fs.unlinkSync(imgPath, (err) => {
                 if (err) {
                     console.error(err);
                 }
             });
-            
+
         } catch (error) {
-            console.error(error);          
+            console.error(error);
         }
 
 
@@ -812,7 +936,7 @@ router.delete('/acabados/:id', async (req, res) => {
         req.flash('finMsg', 'Acabado borrado!');
 
         res.redirect('/articulos/admin/acabados');
-        
+
     } catch (error) {
 
         console.error(error);
@@ -848,10 +972,25 @@ router.post('/acabados', async (req, res) => {
             fs.writeFileSync(`./public/images/finishes/${req.file.filename}`, image);
 
             req.body.image = `/images/finishes/${req.file.filename}`
-    
+
         } catch (error) {
 
             console.error(error);
+
+            try {
+
+                const imgPath = path.join(__dirname, `./public/images/finishes/${req.file.filename}`);
+
+                fs.unlinkSync(imgPath, (err) => {
+                    if (err) {
+                        console.error(err);
+                    }
+                });
+
+            } catch (error) {
+                console.error(error);
+            }
+
             return res.render('error/500', { layout: 'admin' });
         }
 
@@ -867,10 +1006,32 @@ router.post('/acabados', async (req, res) => {
 
             } else {
 
-                let newFinish = req.body;
+                try {
 
-                await Finish.create(newFinish);
-                res.redirect('/articulos/admin');
+                    let newFinish = req.body;
+
+                    await Finish.create(newFinish);
+                    req.flash('finMsg', 'Acabado Creado!');
+                    res.redirect('/articulos/admin/acabados');
+                } catch (error) {
+                    console.error(error);
+
+                    try {
+
+                       const imgPath = path.join(__dirname, `./public/images/finishes/${req.file.filename}`);
+
+                       fs.unlinkSync(imgPath, (err) => {
+                          if (err) {
+                               console.error(err);
+                           }
+                       });
+
+                    } catch (error) {
+                        console.error(error);
+                    }
+
+                    res.render('error/500', { layout: 'admin' });
+                }
 
             }
         });
@@ -893,7 +1054,7 @@ router.get('/acabados', async (req, res) => {
     } catch (error) {
 
         console.error(error);
-        res.render('error/500', { layout: 'admin' });        
+        res.render('error/500', { layout: 'admin' });
     }
 
 });

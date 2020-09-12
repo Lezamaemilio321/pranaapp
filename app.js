@@ -1,7 +1,6 @@
 // Load config
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config({ path: `${__dirname}/config/config.env` });
-}
+require('dotenv').config({ path: `${__dirname}/config/config.env` });
+
 
 // Modules
 const express = require('express');
@@ -49,12 +48,6 @@ require('./config/passport')(passport);
 // Body parser
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
-
-// Login with Morgan
-if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
-}
 
 
 // Handlebars Helpers
@@ -105,15 +98,15 @@ app.use((req, res, next) => {
 
     (async () => {
         try {
-        
+
             const user = await User.findById(req.user._id).lean();
-    
+
             res.locals.cartLength = user.cartItems.length;
-    
+
         } catch {
             res.locals.cartLength = '0';
         }
-    
+
         next();
     })();
 
@@ -135,6 +128,6 @@ app.use(function(req,res){
 });
 
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, console.log(`Server running in ${process.env.NODE_ENV} on port ${PORT}`));
