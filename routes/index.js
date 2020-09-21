@@ -63,6 +63,57 @@ router.get('/nosotros', (req, res) => {
 
 });
 
+router.get('/contactanos', (req, res) => {
+
+    res.render('contact');
+
+});
+
+
+router.post('/email', (req, res) => {
+
+    try {
+        
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'PranaEmailer@gmail.com',
+                pass: 'plo.301.as'
+            }
+        });
+    
+        const mailOptions = {
+            from: 'PranaEmailer@gmail.com',
+            to: 'decorprana@gmail.com',
+            subject: `Mensaje de ${req.body.name}`,
+            text: `Nombre: ${req.body.name}, \n Numero: ${req.body.number}, \n \n Mensaje: ${req.body.message}`
+        };
+    
+        transporter.sendMail(mailOptions, function(err, info){
+            if (err) {
+                req.flash('contactError', 'Perdón, hubo un error');
+                res.redirect('/enviado');
+            }
+        });
+
+        req.flash('contactMsg', 'Mensaje enviado!');
+        res.redirect('/enviado');
+
+    } catch (error) {
+        req.flash('contactError', 'Perdón, hubo un error');
+        res.redirect('/enviado');
+    }
+
+});
+
+
+router.get('/enviado', (req, res) => {
+
+    res.render('contacted', { msg: req.flash('contactMsg'), err: req.flash('contactError') });
+
+});
+
+
 
 
 router.get('/login', ensureGuest, (req, res) => {
@@ -102,14 +153,17 @@ router.get('/success', (req, res) => {
                                 
                                 if (item.image != "/images/default/default.png") {
 
-                                    const imgPath = path.join(__dirname, `../public${item.image}`)
+                                    try {
+                                        const imgPath = path.join(__dirname, `../public${item.image}`)
 
-                                    fs.unlinkSync(imgPath, (err) => {
-                                        if (err) {
-                                            console.error(err);
-                                        }
-                                    });
-
+                                        fs.unlinkSync(imgPath, (err) => {
+                                            if (err) {
+                                                console.error(err);
+                                            }
+                                        });
+                                    } catch (error) {
+                                        console.error(error);
+                                    }
                                 }
 
 
@@ -147,14 +201,14 @@ router.get('/success', (req, res) => {
                             const transporter = nodemailer.createTransport({
                                 service: 'gmail',
                                 auth: {
-                                    user: 'bruh17465@gmail.com',
-                                    pass: 'EMILIO2005'
+                                    user: 'PranaEmailer@gmail.com',
+                                    pass: 'plo.301.as'
                                 }
                             });
         
                             const mailOptions = {
-                                from: 'bruh17465@gmail.com',
-                                to: 'lezamaemilio000@gmail.com',
+                                from: 'PranaEmailer@gmail.com',
+                                to: 'decorprana@gmail.com',
                                 subject: 'Nueva Orden',
                                 text: `Nombre: ${item.name}, Cantidad: ${session.metadata.itemQty}`
                             };
@@ -200,14 +254,17 @@ router.get('/success', (req, res) => {
                                         
                                         if (item.image != "/images/default/default.png") {
 
-                                            const imgPath = path.join(__dirname, `../public${item.image}`)
+                                            try {
+                                                const imgPath = path.join(__dirname, `../public${item.image}`)
             
-                                            fs.unlinkSync(imgPath, (err) => {
-                                                if (err) {
-                                                    console.error(err);
-                                                }
-                                            });
-            
+                                                fs.unlinkSync(imgPath, (err) => {
+                                                    if (err) {
+                                                        console.error(err);
+                                                    }
+                                                });
+                                            } catch (error) {
+                                                console.error(error);
+                                            }
                                         }
         
                                         await Item.deleteOne({ _id: currentItem.id });        
@@ -263,14 +320,14 @@ router.get('/success', (req, res) => {
                             const transporter = nodemailer.createTransport({
                                 service: 'gmail',
                                 auth: {
-                                    user: 'bruh17465@gmail.com',
-                                    pass: 'EMILIO2005'
+                                    user: 'PranaEmailer@gmail.com',
+                                    pass: 'plo.301.as'
                                 }
                             });
         
                             const mailOptions = {
-                                from: 'bruh17465@gmail.com',
-                                to: 'lezamaemilio000@gmail.com',
+                                from: 'PranaEmailer@gmail.com',
+                                to: 'decorprana@gmail.com',
                                 subject: 'Nueva Orden (multiple)',
                                 text: `Nombres: ${names}, Cantidades: ${quantities}`
                             };
@@ -484,10 +541,10 @@ router.post('/purchase', async (req, res) => {
                         } else {
                             finishExists = dbProduct.finishes.map(el => {
     
-                                if (req.body.item_info.finish === 'original') {
+                                if (currentCartItem.finish === 'original') {
                                     return true;
                                 } else {
-                                    return req.body.item_info.finish == el.name;
+                                    return currentCartItem.finish == el.name;
                                 }
                             });
                         }

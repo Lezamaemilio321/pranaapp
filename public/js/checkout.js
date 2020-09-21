@@ -13,13 +13,11 @@ if (purchaseButton && buyNowButtons) {
     for (let btn of buyNowButtons) {
         btn.addEventListener('click', function() {
             purchaseClicked(this);
-            this.disabled = true;
         });
     }
 
     purchaseButton.addEventListener('click', function() {
         purchaseClicked(this);
-        this.disabled = true;
     });
 
 } else if (buyConfirmButtons) {
@@ -28,7 +26,6 @@ if (purchaseButton && buyNowButtons) {
 
         btn.addEventListener('click', function() {
             purchaseClicked(this);
-            this.disabled = true;
         });
 
     }
@@ -141,7 +138,4 @@ function purchaseClicked(target = null) {
     } else {
         purchaseItemHook(null, null, itemFinishObjs);
     }
-
-
-
 }

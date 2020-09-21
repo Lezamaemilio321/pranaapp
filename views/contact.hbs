@@ -1,0 +1,99 @@
+<section class="contact-section">
+
+    <div class="contact-div">
+        <h1><b>Contactanos</b></h1>
+        <br>
+        <h2>Contactanos si tienes dudas, un problema o quieres discutir el precio de tu envio.</h2>
+        <br>
+        <br>
+        <small>Email</small>
+        <h2><b>decorprana@gmail.com</b></h2>
+        <br>
+        <br>
+        <small>Teléfonos</small>
+        <div class="message-container">
+            <h2><b>+52 (986) 122 0560</b></h2>
+            <a href="https://wa.me/529861220560">
+                <img class="message" alt="Whatsapp"><small class="message-text">Whatsapp</small>
+            </a>
+        </div>
+        <div class="message-container">
+            <h2><b>+52 (986) 122 0971</b></h2>
+            <a href="https://wa.me/529861220971">
+                <img class="message" alt="Whatsapp"><small class="message-text">Whatsapp</small>
+            </a>
+        </div>
+    </div>
+
+    <a class="arrow-container" href="#contact-form">
+        <img class="arrow-down" src="images/website/arrow.png">
+    </a>
+
+    <form id="contact-form" class="contact-form" action="/email" method="POST">
+
+        <div class="contact-title">
+            <h1><b>Contactanos</b></h1>
+            <br>
+            <div class="divider"></div>
+        </div>
+
+        <div class="contact-data">
+            <div class="contact-first">
+
+                <div class="contact-input-container">
+                    <label for="Nombre">Nombre</label>
+                    <input class="contact-input" name="name" type="text" placeholder="Tu Nombre">
+                </div>
+
+                <div class="contact-input-container">
+                    <label for="Nombre">No. de teléfono</label>
+                    <input class="contact-input" name="number" type="text" placeholder="Numero de teléfono">
+                </div>
+            </div>
+
+            <div class="contact-second">
+                <label for="Nombre">Mensaje</label>
+                <textarea class="contact-textarea" name="message" type="text" placeholder="Mensaje"></textarea>
+            </div>
+
+
+            <div style="max-height: 100%;">
+                <button class="contact-button" type="submit">
+                    Enviar
+                </button>
+            </div>
+        </div>
+    </form>
+</section>
+
+<script>
+    const winheight = window.innerHeight || (document.documentElement || document.body).clientHeight;
+
+    function getDocHeight() {
+        const doc = document;
+        return Math.max(
+            doc.body.scrollHeight, doc.documentElement.scrollHeight,
+            doc.body.offsetHeight, doc.documentElement.offsetHeight,
+            doc.body.clientHeight, doc.documentElement.clientHeight
+        );
+    }
+    
+    function amountscrolled(){
+        const winHeight = window.innerHeight || (document.documentElement || document.body).clientHeight;
+        const docHeight = getDocHeight();
+        const scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
+        const trackLength = docHeight - winHeight;
+        const pctScrolled = Math.floor(scrollTop/trackLength * 100);
+        
+        if (pctScrolled >= 50) {
+            document.querySelector('.arrow-down').classList.add('fadeOut');
+            setTimeout(() => {
+                document.querySelector('.arrow-down').style.display = 'none';
+            }, 200);
+        }
+    }
+ 
+    window.addEventListener("scroll", function(){
+        amountscrolled()
+    }, false);
+</script>

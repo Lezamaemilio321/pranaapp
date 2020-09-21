@@ -1,0 +1,17 @@
+<section class="success-section">
+    {{#if msg}}
+        <h1>{{ msg }}</h1>
+    {{else}}
+        {{#if err}}
+            <h1>{{ err }}</h1>
+        {{/if}}
+    {{/if}}
+
+    <div>
+        <button class="contact-button" style="padding: 10px 20px; margin-top: 30px;">
+            <a href="/" style="text-decoration: none; color: #ffffff; font-size: 1rem; font-weight: 700; letter-spacing: 2px">
+                Inicio
+            </a>
+        </button>
+    </div>
+</section>

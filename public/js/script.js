@@ -5,7 +5,7 @@ var secondUl = document.querySelector('.second-ul');
 window.addEventListener('resize', checkForWidth)
 
 
-function checkForWidth(){
+function checkForWidth() {
 
     if (window.innerWidth <= 1030){
         for(i of secondList) {

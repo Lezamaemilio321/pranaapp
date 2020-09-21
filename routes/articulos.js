@@ -106,8 +106,6 @@ router.get('/', checkForFinish, async (req, res) => {
             
             const items = await Promise.all(itemsList.map(async current => {
     
-                // currentItem.qty = current.qty;
-
                 for (let curItem of user.cartItems) {
                     
                     if (curItem.id == current._id.toString()){
@@ -162,7 +160,7 @@ router.get('/carrito', checkForFinish, ensureAuth, async (req, res) => {
                 item = await Item.findById(mongoose.Types.ObjectId(current.id));
 
             } catch (err) {
-                console.error();
+                console.error(err);
                 isNone = true;
             }
 
@@ -210,6 +208,14 @@ router.get('/carrito', checkForFinish, ensureAuth, async (req, res) => {
                 try {
 
                     currentItem = await Item.findById(mongoose.Types.ObjectId(current.id)).lean();
+
+                    if (current.info.qty > currentItem.inStock) {
+                        try {
+                            await User.findOneAndUpdate({ _id: user._id, "cartItems.id": currentItem._id.toString() }, { $set: { "cartItems.$.info.qty": currentItem.inStock } });
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }
 
                     currentItem.qty = current.info.qty;
                     currentItem.currentFinish = current.info.finish;
